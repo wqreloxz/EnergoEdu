@@ -1,0 +1,627 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EnergoEdu — Энергосбережение</title>
+<style>
+:root {
+  --bg:#f5f5f5;
+  --surface:#fff;
+  --text:#171717;
+  --muted:#777;
+  --line:#dedede;
+  --accent:#222;
+  --soft:#ededed;
+  --shadow:0 8px 30px #0000000b;
+}
+body.dark {
+  --bg:#111;
+  --surface:#1c1c1c;
+  --text:#f5f5f5;
+  --muted:#aaa;
+  --line:#383838;
+  --accent:#eee;
+  --soft:#292929;
+  --shadow:0 8px 30px #00000030;
+}
+* {box-sizing:border-box}
+html {scroll-behavior:smooth}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  transition:background .35s,color .35s;
+}
+button {font:inherit;cursor:pointer}
+header {
+  position:sticky;top:0;z-index:10;
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+  padding:16px 5%;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:15px;
+  backdrop-filter:blur(12px);
+}
+.logo {font-size:23px;font-weight:800;letter-spacing:-1px}
+.logo span {font-weight:300}
+.header-actions {display:flex;gap:9px;align-items:center}
+.btn {
+  background:var(--accent);color:var(--bg);
+  border:1px solid var(--accent);
+  border-radius:10px;padding:10px 15px;
+  transition:transform .2s,opacity .2s,background .3s;
+}
+.btn:hover {transform:translateY(-2px);opacity:.85}
+.btn.secondary {
+  color:var(--text);background:var(--surface);
+  border-color:var(--line);
+}
+main {max-width:1150px;margin:auto;padding:35px 22px 70px}
+.hero {
+  padding:55px 35px;border:1px solid var(--line);
+  border-radius:22px;background:var(--surface);
+  box-shadow:var(--shadow);
+  animation:rise .7s ease both;
+}
+.eyebrow {
+  color:var(--muted);font-size:12px;
+  text-transform:uppercase;letter-spacing:3px;
+}
+h1 {font-size:clamp(35px,6vw,64px);margin:15px 0;letter-spacing:-2px}
+.hero p {max-width:650px;color:var(--muted);line-height:1.7;font-size:17px}
+.stats {display:flex;gap:35px;flex-wrap:wrap;margin-top:30px}
+.stat strong {display:block;font-size:27px}
+.stat small {color:var(--muted)}
+.section-title {
+  display:flex;justify-content:space-between;align-items:end;
+  gap:15px;margin:45px 0 20px;
+}
+h2 {font-size:28px;margin:0;letter-spacing:-.7px}
+.section-title p {color:var(--muted);margin:7px 0 0}
+.progress-wrap {
+  background:var(--soft);height:9px;border-radius:20px;
+  overflow:hidden;margin-top:15px;
+}
+.progress-bar {
+  height:100%;width:0;background:var(--accent);
+  border-radius:20px;transition:width .6s ease;
+}
+.topics {
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));
+  gap:14px;
+}
+.topic {
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:16px;padding:21px;text-align:left;color:var(--text);
+  min-height:155px;transition:transform .25s,border-color .25s,box-shadow .25s;
+  animation:rise .5s ease both;
+}
+.topic:hover {transform:translateY(-5px);border-color:var(--text);box-shadow:var(--shadow)}
+.topic .number {color:var(--muted);font-size:12px}
+.topic h3 {font-size:18px;margin:15px 0 8px}
+.topic p {color:var(--muted);font-size:13px;line-height:1.5;margin:0}
+.topic .status {font-size:11px;margin-top:14px;color:var(--muted)}
+.panel {
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:20px;padding:28px;box-shadow:var(--shadow);
+  animation:rise .4s ease both;
+}
+.hidden {display:none!important}
+.back {margin-bottom:20px}
+.lesson-text {line-height:1.8;color:var(--text);font-size:16px}
+.lesson-text p {margin:12px 0}
+.lesson-text li {margin:10px 0}
+.callout {
+  padding:17px;border-left:3px solid var(--text);
+  background:var(--soft);border-radius:5px;margin:22px 0;
+}
+.quiz-option {
+  display:block;width:100%;text-align:left;
+  padding:15px;margin:10px 0;border-radius:10px;
+  border:1px solid var(--line);background:var(--surface);
+  color:var(--text);transition:.2s;
+}
+.quiz-option:hover {border-color:var(--text);background:var(--soft)}
+.quiz-option.correct {border-color:#548b61;background:#548b6118}
+.quiz-option.wrong {border-color:#a65a5a;background:#a65a5a18}
+.feedback {margin:15px 0;line-height:1.6}
+.actions {display:flex;gap:10px;flex-wrap:wrap;margin-top:25px}
+footer {text-align:center;padding:30px;color:var(--muted);font-size:13px}
+
+/* Практическая комната */
+.room {
+  position:relative;overflow:hidden;
+  min-height:350px;border:1px solid var(--line);
+  border-radius:16px;margin:20px 0;
+  background:var(--soft);
+}
+.room-wall {
+  position:absolute;inset:0 0 70px;
+  background:linear-gradient(135deg,#d9d9d9,#f1f1f1);
+}
+.dark .room-wall {background:linear-gradient(135deg,#303030,#494949)}
+.window {
+  position:absolute;top:35px;right:35px;
+  width:115px;height:105px;border:7px solid #777;
+  background:linear-gradient(135deg,#fff,#aaa);
+}
+.window:before {
+  content:"";position:absolute;left:50%;top:0;bottom:0;width:4px;background:#777;
+}
+.window:after {
+  content:"";position:absolute;top:50%;left:0;right:0;height:4px;background:#777;
+}
+.sofa {
+  position:absolute;bottom:0;left:10%;
+  width:190px;height:85px;background:#888;
+  border-radius:18px 18px 4px 4px;
+}
+.sofa:before {
+  content:"";position:absolute;left:-9px;right:-9px;top:-25px;
+  height:35px;background:#999;border-radius:14px;
+}
+.lamp {
+  position:absolute;left:55%;top:25px;
+  width:5px;height:90px;background:#777;
+}
+.lamp:before {
+  content:"";position:absolute;top:80px;left:-27px;
+  width:60px;height:30px;border-radius:50% 50% 5px 5px;
+  background:#777;
+}
+.lamp.on:before {box-shadow:0 0 35px 18px #fff; background:#eee}
+.device {
+  position:absolute;bottom:20px;right:14%;
+  width:80px;height:100px;border:5px solid #555;
+  background:#333;border-radius:8px;
+}
+.device:after {
+  content:"";position:absolute;inset:10px;
+  background:#777;border-radius:3px;
+}
+.room-floor {
+  position:absolute;bottom:0;left:0;right:0;height:70px;
+  background:repeating-linear-gradient(90deg,#aaa 0 2px,#bbb 2px 70px);
+}
+.dark .room-floor {background:repeating-linear-gradient(90deg,#444 0 2px,#333 2px 70px)}
+.room-control {
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:16px;
+}
+.room-control h3 {font-size:15px;margin:0 0 8px}
+.room-control p {font-size:12px;color:var(--muted);margin:0 0 12px}
+.room-controls {display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.room-control.done {border-color:#548b61}
+.tap {
+  position:absolute;top:190px;left:45%;
+  width:50px;height:35px;border:5px solid #777;border-radius:8px;
+}
+.tap:after {
+  content:"";position:absolute;right:-22px;top:8px;
+  width:25px;height:6px;background:#777;
+}
+@keyframes rise {
+  from {opacity:0;transform:translateY(16px)}
+  to {opacity:1;transform:translateY(0)}
+}
+@keyframes pulse {
+  0%,100% {transform:scale(1)}
+  50% {transform:scale(1.04)}
+}
+@media(max-width:600px) {
+  header {padding:13px 4%}
+  .logo {font-size:19px}
+  .btn {padding:9px 10px;font-size:13px}
+  main {padding:20px 14px 50px}
+  .hero {padding:35px 22px}
+  .panel {padding:20px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Energo<span>Edu</span></div>
+  <div class="header-actions">
+    <button class="btn secondary" onclick="toggleLanguage()" id="langBtn">RU / BE</button>
+    <button class="btn secondary" onclick="toggleTheme()" id="themeBtn">Тема</button>
+  </div>
+</header>
+
+<main>
+<section id="home">
+  <div class="hero">
+    <div class="eyebrow" data-i="eyebrow">ОБРАЗОВАТЕЛЬНАЯ ПЛАТФОРМА</div>
+    <h1 data-i="heroTitle">Энергия начинается с тебя.</h1>
+    <p data-i="heroText">Изучай энергосбережение, проходи тесты и проверяй свои знания на практике. Маленькие действия создают большие изменения.</p>
+    <div class="stats">
+      <div class="stat"><strong id="completedCount">0 / 15</strong><small data-i="completed">Тем пройдено</small></div>
+      <div class="stat"><strong id="percent">0%</strong><small data-i="progress">Общий прогресс</small></div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="mainProgress"></div></div>
+  </div>
+
+  <div class="section-title">
+    <div><h2 data-i="topicsTitle">Учебные темы</h2><p data-i="topicsSub">Выбери тему, изучи теорию и пройди тест.</p></div>
+  </div>
+  <div class="topics" id="topics"></div>
+
+  <div class="section-title">
+    <div><h2 data-i="practiceTitle">Практическая комната</h2><p data-i="practiceSub">Найди способы сэкономить ресурсы в виртуальной комнате.</p></div>
+  </div>
+  <div class="panel">
+    <h3 data-i="roomTitle">Твоя задача — сделать комнату энергоэффективной</h3>
+    <p class="lesson-text" data-i="roomText">Используй кнопки ниже, чтобы выключить свет, отключить приборы, закрыть воду и уменьшить отопление.</p>
+    <div class="room">
+      <div class="room-wall">
+        <div class="window"></div>
+        <div class="lamp" id="roomLamp"></div>
+        <div class="tap" id="roomTap"></div>
+        <div class="sofa"></div>
+        <div class="device" id="roomDevice"></div>
+      </div>
+      <div class="room-floor"></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><strong id="roomScore">0 / 4</strong><small data-i="roomProgress">Действий выполнено</small></div>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="roomBar"></div></div>
+    <div class="room-controls" style="margin-top:18px">
+      <div class="room-control" id="controlLight">
+        <h3 data-i="lightTitle">Освещение</h3>
+        <p data-i="lightText">В комнате горит свет.</p>
+        <button class="btn" onclick="doTask('light')" data-i="turnOff">Выключить свет</button>
+      </div>
+      <div class="room-control" id="controlDevice">
+        <h3 data-i="deviceTitle">Электроприбор</h3>
+        <p data-i="deviceText">Прибор оставлен включённым.</p>
+        <button class="btn" onclick="doTask('device')" data-i="unplug">Отключить прибор</button>
+      </div>
+      <div class="room-control" id="controlWater">
+        <h3 data-i="waterTitle">Водопроводный кран</h3>
+        <p data-i="waterText">Вода продолжает течь.</p>
+        <button class="btn" onclick="doTask('water')" data-i="closeTap">Закрыть кран</button>
+      </div>
+      <div class="room-control" id="controlHeat">
+        <h3 data-i="heatTitle">Отопление</h3>
+        <p data-i="heatText">Отопление работает на высокой мощности.</p>
+        <button class="btn" onclick="doTask('heat')" data-i="reduceHeat">Уменьшить отопление</button>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn secondary" onclick="resetRoom()" data-i="reset">Начать заново</button>
+    </div>
+    <p class="feedback" id="roomFeedback" aria-live="polite"></p>
+  </div>
+</section>
+
+<section id="lesson" class="hidden">
+  <button class="btn secondary back" onclick="goHome()" data-i="back">← Назад к темам</button>
+  <div class="panel">
+    <div class="eyebrow" id="lessonNumber"></div>
+    <h2 id="lessonTitle" style="margin:12px 0 20px"></h2>
+    <div class="lesson-text" id="lessonContent"></div>
+    <div class="actions"><button class="btn" onclick="startQuiz()" data-i="startQuiz">Перейти к тесту</button></div>
+  </div>
+</section>
+
+<section id="quiz" class="hidden">
+  <button class="btn secondary back" onclick="goLesson()" data-i="backTheory">← Вернуться к теории</button>
+  <div class="panel">
+    <div class="eyebrow" id="quizCounter"></div>
+    <h2 id="question"></h2>
+    <div id="answers"></div>
+    <div class="feedback" id="quizFeedback" aria-live="polite"></div>
+    <div class="actions"><button class="btn hidden" id="nextQuestion" onclick="nextQuiz()" data-i="next">Далее</button></div>
+  </div>
+</section>
+
+<section id="result" class="hidden">
+  <div class="panel">
+    <div class="eyebrow" data-i="resultLabel">РЕЗУЛЬТАТ</div>
+    <h2 data-i="resultTitle">Тест завершён!</h2>
+    <h1 id="resultScore"></h1>
+    <p id="resultMessage" class="lesson-text"></p>
+    <div class="actions">
+      <button class="btn" onclick="goHome()" data-i="toTopics">К темам</button>
+      <button class="btn secondary" onclick="retryQuiz()" data-i="retry">Повторить тест</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>EnergoEdu · <span data-i="footer">Учись экономить энергию каждый день.</span></footer>
+
+<script>
+const translations = {
+ru: {
+eyebrow:"ОБРАЗОВАТЕЛЬНАЯ ПЛАТФОРМА",
+heroTitle:"Энергия начинается с тебя.",
+heroText:"Изучай энергосбережение, проходи тесты и проверяй свои знания на практике. Маленькие действия создают большие изменения.",
+completed:"Тем пройдено",progress:"Общий прогресс",
+topicsTitle:"Учебные темы",topicsSub:"Выбери тему, изучи теорию и пройди тест.",
+practiceTitle:"Практическая комната",practiceSub:"Найди способы сэкономить ресурсы в виртуальной комнате.",
+roomTitle:"Твоя задача — сделать комнату энергоэффективной",
+roomText:"Используй кнопки ниже, чтобы выключить свет, отключить приборы, закрыть воду и уменьшить отопление.",
+roomProgress:"Действий выполнено",lightTitle:"Освещение",lightText:"В комнате горит свет.",
+deviceTitle:"Электроприбор",deviceText:"Прибор оставлен включённым.",
+waterTitle:"Водопроводный кран",waterText:"Вода продолжает течь.",
+heatTitle:"Отопление",heatText:"Отопление работает на высокой мощности.",
+turnOff:"Выключить свет",unplug:"Отключить прибор",closeTap:"Закрыть кран",reduceHeat:"Уменьшить отопление",
+reset:"Начать заново",back:"← Назад к темам",backTheory:"← Вернуться к теории",
+startQuiz:"Перейти к тесту",next:"Далее",resultLabel:"РЕЗУЛЬТАТ",resultTitle:"Тест завершён!",
+toTopics:"К темам",retry:"Повторить тест",footer:"Учись экономить энергию каждый день.",
+finished:"Отлично! Ты сделал комнату более энергоэффективной.",
+roomDone:"Выполнено",topicDone:"Пройдено",topicOpen:"Изучить тему",
+correct:"Верно!",wrong:"Не совсем. Попробуй ещё раз в следующий раз.",
+score:"Правильных ответов",excellent:"Отличный результат!",good:"Хорошая работа! Продолжай учиться.",tryAgain:"Повтори теорию и попробуй ещё раз.",
+tasks:[
+["Выключи свет, когда он не нужен.","Освещение выключено."],
+["Отключи прибор от сети, если он не используется.","Прибор отключён."],
+["Закрой кран, чтобы не расходовать воду зря.","Вода перекрыта."],
+["Уменьши отопление до комфортного уровня.","Отопление настроено экономно."]
+],
+topics:[
+["Что такое энергосбережение","Основы разумного использования энергии.","Энергосбережение — это сокращение потребления энергии без потери комфорта и качества жизни. Оно помогает экономить деньги и уменьшать нагрузку на окружающую среду."],
+["Электрическая энергия","Откуда берётся электричество.","Электрическая энергия производится на электростанциях. Для её получения используют воду, ветер, солнце, тепло и другие источники. Чем рациональнее мы используем электричество, тем меньше ресурсов требуется."],
+["Возобновляемые источники энергии","Солнце, ветер и вода.","Солнечные панели преобразуют свет в электричество. Ветряные турбины используют движение воздуха, а гидроэлектростанции — энергию воды. Эти источники естественно восполняются."],
+["Невозобновляемые источники энергии","Уголь, нефть и газ.","Ископаемое топливо образуется очень долго. Его запасы ограничены, а сжигание приводит к выбросам парниковых газов и загрязнению воздуха."],
+["Энергосбережение дома","Простые бытовые привычки.","Выключай свет в пустых комнатах, используй энергоэффективные лампы, отключай ненужные приборы и не оставляй зарядные устройства в розетке без необходимости."],
+["Энергоэффективное освещение","Как освещать помещение разумно.","Светодиодные лампы потребляют меньше электричества и служат дольше многих традиционных ламп. Днём полезно использовать естественный свет."],
+["Экономия воды","Вода тоже требует энергии.","Для очистки, подачи и нагрева воды нужна энергия. Закрывай кран во время чистки зубов, устраняй протечки и выбирай короткий душ вместо долгого."],
+["Утепление помещений","Сохраняем тепло.","Тепло уходит через окна, двери, стены и крышу. Уплотнение окон и дверей, утепление стен и правильное проветривание помогают уменьшить потери."],
+["Отопление и температура","Комфорт без лишнего расхода.","Не перегревай помещение. Поддерживай комфортную температуру, не закрывай радиаторы мебелью и проветривай комнату коротко и интенсивно."],
+["Энергия на кухне","Экономное приготовление пищи.","Закрывай кастрюли крышками, подбирай конфорку под размер посуды и не открывай духовку без необходимости. Загружай посудомоечную машину рационально."],
+["Бытовая техника","Выбираем и используем правильно.","При покупке сравнивай энергопотребление техники. Используй стиральную машину при полной загрузке, выбирай подходящую температуру и отключай неиспользуемые устройства."],
+["Транспорт и энергия","Как передвигаться эффективнее.","Пешие прогулки, велосипед и общественный транспорт часто требуют меньше энергии на одного пассажира, чем поездка на личном автомобиле."],
+["Энергия в школе","Экономия начинается в классе.","Выключай освещение и оборудование после занятий, используй дневной свет и сообщай о протекающих кранах или неисправных окнах."],
+["Переработка отходов","Экономим ресурсы повторно.","Переработка бумаги, металла, стекла и некоторых видов пластика помогает экономить сырьё и энергию, которые потребовались бы для производства новых материалов."],
+["Будущее энергетики","Технологии и ответственное потребление.","Умные сети, накопители энергии, эффективные здания и возобновляемые источники помогают строить более устойчивую энергетическую систему."]
+],
+quizzes:[
+[["Что лучше всего описывает энергосбережение?",["Полный отказ от электричества","Разумное использование энергии","Использование только угля"],1],["Что помогает экономить электричество?",["Оставлять свет включённым","Отключать ненужные приборы","Держать окна открытыми зимой"],1]],
+[["Где производится электрическая энергия?",["На электростанциях","В водопроводе","В батарее телефона"],0],["Какой источник может использоваться для производства электричества?",["Ветер","Пластик сам по себе","Песок"],0]],
+[["Какой источник является возобновляемым?",["Уголь","Солнечный свет","Нефть"],1],["Что вращает ветряную турбину?",["Движение воздуха","Почва","Снег"],0]],
+[["Что относится к ископаемому топливу?",["Солнечный свет","Ветер","Природный газ"],2],["Какой недостаток есть у ископаемого топлива?",["Запасы ограничены","Оно бесконечно","Оно не выделяет выбросов"],0]],
+[["Что стоит делать, выходя из комнаты?",["Оставить свет","Выключить ненужный свет","Включить все приборы"],1],["Как поступить с зарядным устройством?",["Отключить, если оно не нужно","Оставить навсегда","Положить в воду"],0]],
+[["Какие лампы обычно экономичнее?",["Лампы накаливания","Светодиодные","Свечи"],1],["Что помогает днём?",["Закрывать шторы","Использовать дневной свет","Включить все лампы"],1]],
+[["Почему экономия воды помогает экономить энергию?",["Воду нужно очищать и подавать","Вода создаёт электричество сама","Вода не связана с энергией"],0],["Что делать при чистке зубов?",["Оставлять кран открытым","Закрывать кран","Увеличить напор"],1]],
+[["Где часто теряется тепло?",["Через окна и двери","Через выключатель","Через книгу"],0],["Что помогает сохранять тепло?",["Открытые окна зимой","Уплотнение окон","Сломанная дверь"],1]],
+[["Как лучше проветривать зимой?",["Долго держать окно открытым","Коротко и интенсивно","Не проветривать никогда"],1],["Что не следует делать с радиатором?",["Оставлять открытым","Закрывать мебелью","Поддерживать доступ воздуха"],1]],
+[["Как экономить при приготовлении пищи?",["Использовать крышку","Всегда включать все конфорки","Оставлять духовку открытой"],0],["Какую конфорку выбрать?",["Самую большую всегда","Под размер посуды","Любую включённую"],1]],
+[["Что полезно проверить при покупке техники?",["Цвет корпуса","Энергопотребление","Количество наклеек"],1],["Когда рационально запускать стиральную машину?",["При подходящей полной загрузке","С одной вещью всегда","С открытой дверцей"],0]],
+[["Что обычно экономичнее для короткой поездки?",["Поездка одному на автомобиле","Велосипед","Большой грузовик"],1],["Что снижает расход энергии на пассажира?",["Общественный транспорт","Поездка на нескольких машинах","Пробки"],0]],
+[["Что нужно делать после уроков?",["Оставлять проектор включённым","Выключать оборудование","Оставлять открытыми окна зимой"],1],["Кому сообщить о протечке?",["Никому","Ответственному взрослому или сотруднику","Случайному прохожему"],1]],
+[["Что помогает экономить сырьё?",["Переработка материалов","Сжигание всего мусора","Смешивание всех отходов"],0],["Что можно перерабатывать?",["Некоторые виды пластика","Только еду","Ничего"],0]],
+[["Что такое умная энергосеть?",["Система управления и распределения энергии","Обычная лампочка","Вид топлива"],0],["Что помогает устойчивой энергетике?",["Только рост потребления","Эффективность и чистые источники","Отказ от любых технологий"],1]]
+]
+},
+be: {
+eyebrow:"АДУКАЦЫЙНАЯ ПЛАТФОРМА",
+heroTitle:"Энергія пачынаецца з цябе.",
+heroText:"Вывучай энергазберажэнне, праходзь тэсты і правярай свае веды на практыцы. Маленькія дзеянні ствараюць вялікія змены.",
+completed:"Тэм пройдзена",progress:"Агульны прагрэс",
+topicsTitle:"Навучальныя тэмы",topicsSub:"Выберы тэму, вывучы тэорыю і прайдзі тэст.",
+practiceTitle:"Практычны пакой",practiceSub:"Знайдзі спосабы зэканоміць рэсурсы ў віртуальным пакоі.",
+roomTitle:"Твая задача — зрабіць пакой энергаэфектыўным",
+roomText:"Выкарыстоўвай кнопкі ніжэй, каб выключыць святло, адключыць прыборы, закрыць ваду і паменшыць ацяпленне.",
+roomProgress:"Дзеянняў выканана",lightTitle:"Асвятленне",lightText:"У пакоі гарыць святло.",
+deviceTitle:"Электрапрыбор",deviceText:"Прыбор застаўся ўключаным.",
+waterTitle:"Водаправодны кран",waterText:"Вада працягвае цячы.",
+heatTitle:"Ацяпленне",heatText:"Ацяпленне працуе на высокай магутнасці.",
+turnOff:"Выключыць святло",unplug:"Адключыць прыбор",closeTap:"Закрыць кран",reduceHeat:"Паменшыць ацяпленне",
+reset:"Пачаць нанова",back:"← Назад да тэм",backTheory:"← Вярнуцца да тэорыі",
+startQuiz:"Перайсці да тэсту",next:"Далей",resultLabel:"ВЫНІК",resultTitle:"Тэст завершаны!",
+toTopics:"Да тэм",retry:"Паўтарыць тэст",footer:"Вучыся эканоміць энергію кожны дзень.",
+finished:"Выдатна! Ты зрабіў пакой больш энергаэфектыўным.",
+roomDone:"Выканана",topicDone:"Пройдзена",topicOpen:"Вывучыць тэму",
+correct:"Правільна!",wrong:"Не зусім. Паспрабуй яшчэ раз у наступны раз.",
+score:"Правільных адказаў",excellent:"Выдатны вынік!",good:"Добрая праца! Працягвай вучыцца.",tryAgain:"Паўтары тэорыю і паспрабуй яшчэ раз.",
+tasks:[
+["Выключы святло, калі яно не патрэбнае.","Асвятленне выключана."],
+["Адключы прыбор ад сеткі, калі ён не выкарыстоўваецца.","Прыбор адключаны."],
+["Закрый кран, каб не расходаваць ваду дарма.","Вада перакрыта."],
+["Паменшы ацяпленне да камфортнага ўзроўню.","Ацяпленне настроена эканомна."]
+],
+topics:[
+["Што такое энергазберажэнне","Асновы разумнага выкарыстання энергіі.","Энергазберажэнне — гэта скарачэнне спажывання энергіі без страты камфорту і якасці жыцця. Яно дапамагае эканоміць грошы і памяншаць нагрузку на навакольнае асяроддзе."],
+["Электрычная энергія","Адкуль бярэцца электрычнасць.","Электрычная энергія вырабляецца на электрастанцыях. Для яе атрымання выкарыстоўваюць ваду, вецер, сонца, цяпло і іншыя крыніцы. Рацыянальнае выкарыстанне электрычнасці дапамагае эканоміць рэсурсы."],
+["Аднаўляльныя крыніцы энергіі","Сонца, вецер і вада.","Сонечныя панэлі пераўтвараюць святло ў электрычнасць. Ветраныя турбіны выкарыстоўваюць рух паветра, а гідраэлектрастанцыі — энергію вады."],
+["Неаднаўляльныя крыніцы энергіі","Вугаль, нафта і газ.","Выкапнёвае паліва ўтвараецца вельмі доўга. Яго запасы абмежаваныя, а спальванне прыводзіць да выкідаў парніковых газаў."],
+["Энергазберажэнне дома","Простыя бытавыя звычкі.","Выключай святло ў пустых пакоях, выкарыстоўвай энергаэфектыўныя лямпы, адключай непатрэбныя прыборы."],
+["Энергаэфектыўнае асвятленне","Як асвятляць памяшканне разумна.","Святлодыёдныя лямпы спажываюць менш электрычнасці і служаць даўжэй за многія традыцыйныя лямпы. Днём карысна выкарыстоўваць натуральнае святло."],
+["Эканомія вады","Вада таксама патрабуе энергіі.","Для ачысткі, падачы і нагрэву вады патрэбна энергія. Закрывай кран падчас чысткі зубоў і ліквідуй працяканні."],
+["Уцяпленне памяшканняў","Захоўваем цяпло.","Цяпло сыходзіць праз вокны, дзверы, сцены і дах. Ушчыльненне вокнаў і дзвярэй дапамагае паменшыць страты."],
+["Ацяпленне і тэмпература","Камфорт без лішніх выдаткаў.","Не перагравай памяшканне. Падтрымлівай камфортную тэмпературу і не закрывай радыятары мэбляй."],
+["Энергія на кухні","Эканомнае прыгатаванне ежы.","Закрывай каструлі накрыўкамі, падбірай канфорку пад памер посуду і не адкрывай духоўку без патрэбы."],
+["Бытавая тэхніка","Выбіраем і выкарыстоўваем правільна.","Пры куплі параўноўвай энергаспажыванне тэхнікі. Выкарыстоўвай пральную машыну пры поўнай загрузцы."],
+["Транспарт і энергія","Як перамяшчацца эфектыўней.","Пешыя прагулкі, ровар і грамадскі транспарт часта патрабуюць менш энергіі на аднаго пасажыра."],
+["Энергія ў школе","Эканомія пачынаецца ў класе.","Выключай асвятленне і абсталяванне пасля заняткаў, выкарыстоўвай дзённае святло."],
+["Перапрацоўка адходаў","Эканомім рэсурсы паўторна.","Перапрацоўка паперы, металу, шкла і некаторых відаў пластыку дапамагае эканоміць сыравіну і энергію."],
+["Будучыня энергетыкі","Тэхналогіі і адказнае спажыванне.","Разумныя сеткі, назапашвальнікі энергіі, эфектыўныя будынкі і аднаўляльныя крыніцы дапамагаюць ствараць устойлівую энергетыку."]
+],
+quizzes:null
+}
+};
+
+// Пытанні для абедзвюх моў
+translations.be.quizzes = translations.ru.quizzes;
+
+let lang = "ru";
+let currentTopic = 0;
+let questionIndex = 0;
+let score = 0;
+let answered = false;
+let roomTasks = {light:false,device:false,water:false,heat:false};
+let completed = JSON.parse(localStorage.getItem("energoCompleted") || "[]");
+
+const $ = id => document.getElementById(id);
+const t = key => translations[lang][key];
+
+function toggleTheme() {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("energoTheme",document.body.classList.contains("dark")?"dark":"light");
+}
+if(localStorage.getItem("energoTheme")==="dark") document.body.classList.add("dark");
+
+function toggleLanguage() {
+  lang = lang==="ru"?"be":"ru";
+  document.documentElement.lang = lang;
+  $("langBtn").textContent = lang==="ru"?"RU / BE":"BE / RU";
+  document.querySelectorAll("[data-i]").forEach(el=>{
+    const key=el.dataset.i;
+    if(t(key)) el.textContent=t(key);
+  });
+  renderTopics();
+  updateProgress();
+  resetRoom();
+  if(!$("lesson").classList.contains("hidden")) showLessonContent();
+}
+
+function updateProgress() {
+  const count=completed.length;
+  const percent=Math.round(count/15*100);
+  $("completedCount").textContent=count+" / 15";
+  $("percent").textContent=percent+"%";
+  $("mainProgress").style.width=percent+"%";
+}
+
+function renderTopics() {
+  $("topics").innerHTML="";
+  t("topics").forEach((topic,i)=>{
+    const done=completed.includes(i);
+    const card=document.createElement("button");
+    card.className="topic";
+    card.style.animationDelay=(i*25)+"ms";
+    card.innerHTML=`
+      <div class="number">ТЕМА ${(i+1).toString().padStart(2,"0")}</div>
+      <h3>${topic[0]}</h3>
+      <p>${topic[1]}</p>
+      <div class="status">${done?"✓ "+t("topicDone"):t("topicOpen")}</div>`;
+    card.onclick=()=>openLesson(i);
+    $("topics").appendChild(card);
+  });
+}
+function showSection(id) {
+  ["home","lesson","quiz","result"].forEach(x=>$(x).classList.add("hidden"));
+  $(id).classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function openLesson(i) {
+  currentTopic=i;
+  showSection("lesson");
+  showLessonContent();
+}
+function showLessonContent() {
+  const topic=t("topics")[currentTopic];
+  $("lessonNumber").textContent="ТЕМА "+(currentTopic+1)+" / 15";
+  $("lessonTitle").textContent=topic[0];
+  $("lessonContent").innerHTML=`
+    <p>${topic[2]}</p>
+    <div class="callout"><strong>${lang==="ru"?"Запомни:":"Запомні:"}</strong><br>
+    ${lang==="ru"?"Даже небольшие изменения привычек помогают экономить ресурсы каждый день.":"Нават невялікія змены звычак дапамагаюць эканоміць рэсурсы кожны дзень."}</div>`;
+}
+function goHome(){showSection("home")}
+function goLesson(){showSection("lesson")}
+function startQuiz() {
+  questionIndex=0;score=0;
+  showSection("quiz");
+  renderQuestion();
+}
+function renderQuestion() {
+  answered=false;
+  const q=t("quizzes")[currentTopic][questionIndex];
+  $("quizCounter").textContent=`ВОПРОС ${questionIndex+1} / ${t("quizzes")[currentTopic].length}`;
+  $("question").textContent=q[0];
+  $("answers").innerHTML="";
+  $("quizFeedback").textContent="";
+  $("nextQuestion").classList.add("hidden");
+  q[1].forEach((answer,i)=>{
+    const b=document.createElement("button");
+    b.className="quiz-option";
+    b.textContent=answer;
+    b.onclick=()=>chooseAnswer(i,b);
+    $("answers").appendChild(b);
+  });
+}
+function chooseAnswer(index,button) {
+  if(answered)return;
+  answered=true;
+  const q=t("quizzes")[currentTopic][questionIndex];
+  const correct=q[2];
+  document.querySelectorAll(".quiz-option").forEach((b,i)=>{
+    b.disabled=true;
+    if(i===correct)b.classList.add("correct");
+  });
+  if(index===correct) {
+    score++;
+    $("quizFeedback").textContent=t("correct");
+  } else {
+    button.classList.add("wrong");
+    $("quizFeedback").textContent=t("wrong");
+  }
+  $("nextQuestion").classList.remove("hidden");
+  $("nextQuestion").textContent=questionIndex===t("quizzes")[currentTopic].length-1?
+    (lang==="ru"?"Завершить":"Завяршыць"):t("next");
+}
+function nextQuiz() {
+  questionIndex++;
+  if(questionIndex<t("quizzes")[currentTopic].length)renderQuestion();
+  else finishQuiz();
+}
+function finishQuiz() {
+  if(!completed.includes(currentTopic)) {
+    completed.push(currentTopic);
+    localStorage.setItem("energoCompleted",JSON.stringify(completed));
+  }
+  updateProgress();
+  $("resultScore").textContent=score+" / "+t("quizzes")[currentTopic].length;
+  const ratio=score/t("quizzes")[currentTopic].length;
+  $("resultMessage").textContent=ratio>=.8?t("excellent"):ratio>=.5?t("good"):t("tryAgain");
+  showSection("result");
+  renderTopics();
+}
+function retryQuiz(){startQuiz()}
+
+function doTask(name) {
+  if(roomTasks[name])return;
+  roomTasks[name]=true;
+  const index=["light","device","water","heat"].indexOf(name);
+  $("control"+name[0].toUpperCase()+name.slice(1)).classList.add("done");
+  const buttons=document.querySelectorAll(".room-control button");
+  buttons[index].disabled=true;
+  buttons[index].textContent=t("roomDone");
+  if(name==="light")$("roomLamp").classList.remove("on");
+  if(name==="device")$("roomDevice").style.opacity=".25";
+  if(name==="water")$("roomTap").style.opacity=".3";
+  if(name==="heat")$("roomFloor").style.opacity=".5";
+  const count=Object.values(roomTasks).filter(Boolean).length;
+  $("roomScore").textContent=count+" / 4";
+  $("roomBar").style.width=(count/4*100)+"%";
+  $("roomFeedback").textContent=count===4?t("finished"):t("tasks")[index][1];
+}
+function resetRoom() {
+  roomTasks={light:false,device:false,water:false,heat:false};
+  $("roomScore").textContent="0 / 4";
+  $("roomBar").style.width="0%";
+  $("roomFeedback").textContent="";
+  $("roomLamp").classList.add("on");
+  $("roomDevice").style.opacity="1";
+  $("roomTap").style.opacity="1";
+  $("roomFloor").style.opacity="1";
+  ["Light","Device","Water","Heat"].forEach((name,i)=>{
+    $("control"+name).classList.remove("done");
+    const button=$("control"+name).querySelector("button");
+    button.disabled=false;
+    button.textContent=[t("turnOff"),t("unplug"),t("closeTap"),t("reduceHeat")][i];
+  });
+}
+
+renderTopics();
+updateProgress();
+resetRoom();
+</script>
+</body>
+</html>
